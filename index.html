@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-Tenant Bot Test Page</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('./Images/VCBbg.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        .logo-container {
+            text-align: left;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-left: 20px;
+        }
+        .logo {
+            width: 40px;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+        .title-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+            margin: 0;
+            letter-spacing: 0.5px;
+            display: inline;
+        }
+        .subtitle {
+            display: none;
+        }
+        #chatbox { 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            padding: 15px; 
+            height: 400px; 
+            overflow-y: auto; 
+            margin-bottom: 15px; 
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .user-message {
+            background-color: #2979ff;
+            color: white;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #000;
+            margin-right: auto;
+            font-family: monospace;
+            line-height: 1.5;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        #input { 
+            flex-grow: 1;
+            padding: 12px; 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #000;
+        }
+        button { 
+            padding: 10px 20px; 
+            background-color: #2979ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #1565c0;
+            transform: translateY(-2px);
+        }
+        .confirmation-buttons {
+            margin-top: 10px;
+        }
+        .confirm-button {
+            background-color: #00c853;
+            margin-right: 10px;
+        }
+        .confirm-button:hover {
+            background-color: #00a844;
+        }
+        .cancel-button {
+            background-color: #ff1744;
+        }
+        .cancel-button:hover {
+            background-color: #d50000;
+        }
+        .download-button {
+            background-color: #00c853;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .download-button:hover {
+            background-color: #00a844;
+            transform: translateY(-2px);
+        }
+        .tenant-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .tenant-selector select {
+            padding: 8px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #000;
+        }
+        .tenant-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .remove-tenant {
+            background-color: #ff1744;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .remove-tenant:hover {
+            background-color: #d50000;
+        }
+        .loading {
+            display: inline-block;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-top: 10px;
+            animation: pulse 1.5s infinite;
+            backdrop-filter: blur(5px);
+            color: #fff;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="./Images/VCBChatbotIcon.png" alt="VCB Chatbot" class="logo">
+            <h1 class="title">Microsoft 365 Management AI Chatbot Assistant</h1>
+        </div>
+        <div class="tenant-selector">
+            <div class="tenant-actions">
+                <button onclick="showAddTenantForm()">Add New Tenant</button>
+                <button class="remove-tenant" onclick="removeTenant()">Remove Selected Tenant</button>
+            </div>
+            <select id="tenantSelect" onchange="selectTenant()">
+                <option value="">Select Tenant</option>
+            </select>
+        </div>
+        <div id="chatbox"></div>
+        <div class="input-container">
+            <input type="text" id="input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <button id="downloadButton" onclick="downloadPolicies()" style="display: none;">Download Raw Data</button>
+    </div>
+    <script>
+        let pendingCommand = null;
+        let currentTenantId = null;
+        const chatbox = document.getElementById('chatbox');
+        const input = document.getElementById('input');
+
+        // Add function to handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        async function loadTenants() {
+            const res = await fetch('/api/tenants');
+            const data = await res.json();
+            const select = document.getElementById('tenantSelect');
+            
+            select.innerHTML = '<option value="">Select Tenant</option>';
+            data.tenants.forEach(tenant => {
+                select.innerHTML += `<option value="${tenant.tenantId}">${tenant.tenantName}</option>`;
+            });
+        }
+
+        function showAddTenantForm() {
+            const tenantName = prompt('Enter tenant name:');
+            const adminEmail = prompt('Enter admin email:');
+            const tenantId = prompt('Enter tenant ID:');
+            
+            if (tenantName && adminEmail && tenantId) {
+                addTenant(tenantId, tenantName, adminEmail);
+            }
+        }
+
+        async function addTenant(tenantId, tenantName, adminEmail) {
+            const res = await fetch('/api/tenant/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tenantId, tenantName, adminEmail })
+            });
+            
+            if (res.ok) {
+                loadTenants();
+            } else {
+                alert('Failed to add tenant');
+            }
+        }
+
+        function selectTenant() {
+            currentTenantId = document.getElementById('tenantSelect').value;
+        }
+
+        const sendMessage = async () => {
+            const message = input.value;
+            if (!message) return;
+
+            chatbox.innerHTML += `
+                <div class="message user-message">${message}</div>
+            `;
+
+            const res = await fetch('/api/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    text: message,
+                    tenantId: currentTenantId
+                })
+            });
+            
+            const data = await res.json();
+            
+            let botMessage = `<div class="message bot-message">${data.text}</div>`;
+            
+            if (data.requireConfirmation && data.command) {
+                pendingCommand = data.command;
+                botMessage += `
+                    <div class="confirmation-buttons">
+                        <button class="confirm-button" onclick="executeCommand()">Yes, proceed</button>
+                        <button class="cancel-button" onclick="cancelCommand()">No, cancel</button>
+                    </div>
+                `;
+            } else if (data.showDownload) {
+                botMessage += `
+                    <a href="/api/download-policies" class="download-button">
+                        Download Raw Data
+                    </a>
+                `;
+            }
+            
+            chatbox.innerHTML += botMessage;
+            input.value = '';
+            chatbox.scrollTop = chatbox.scrollHeight;
+        };
+
+        const executeCommand = async () => {
+            if (!pendingCommand) return;
+
+            // Show loading indicator
+            chatbox.innerHTML += `
+                <div class="message bot-message loading">
+                    Executing command... Please wait...
+                </div>
+            `;
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            try {
+                const res = await fetch('/api/execute-command', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        command: pendingCommand,
+                        tenantId: currentTenantId
+                    })
+                });
+                
+                const data = await res.json();
+                
+                // Remove the loading message
+                const loadingMessage = chatbox.querySelector('.loading');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+                
+                let botMessage = `<div class="message bot-message">${data.text}</div>`;
+                if (data.showDownload) {
+                    botMessage += `
+                        <a href="/api/download-policies" class="download-button">
+                            Download Raw Data
+                        </a>
+                    `;
+                }
+                
+                chatbox.innerHTML += botMessage;
+            } catch (error) {
+                // Remove the loading message
+                const loadingMessage = chatbox.querySelector('.loading');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+                
+                chatbox.innerHTML += `
+                    <div class="message bot-message">
+                        Error executing command. Please try again.
+                    </div>
+                `;
+            }
+            
+            pendingCommand = null;
+            chatbox.scrollTop = chatbox.scrollHeight;
+        };
+
+        const cancelCommand = () => {
+            pendingCommand = null;
+            chatbox.innerHTML += `
+                <div class="message bot-message">Command cancelled. How else can I help you?</div>
+            `;
+            chatbox.scrollTop = chatbox.scrollHeight;
+        };
+
+        async function removeTenant() {
+            const tenantId = document.getElementById('tenantSelect').value;
+            if (!tenantId) {
+                alert('Please select a tenant to remove');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to remove this tenant?')) {
+                return;
+            }
+
+            const res = await fetch(`/api/tenant/${tenantId}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                currentTenantId = null;
+                loadTenants();
+                alert('Tenant removed successfully');
+            } else {
+                alert('Failed to remove tenant');
+            }
+        }
+
+        // Load tenants on page load
+        window.onload = async () => {
+            await loadTenants();
+            const res = await fetch('/api/init');
+            const data = await res.json();
+            chatbox.innerHTML = `<div class="message bot-message">${data.text}</div>`;
+        };
+    </script>
+</body>
+</html> 
